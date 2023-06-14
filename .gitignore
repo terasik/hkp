@@ -1,0 +1,3 @@
+*.kdbx
+*.kdbx*
+__pycache__/
