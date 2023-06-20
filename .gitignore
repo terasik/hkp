@@ -1,3 +1,4 @@
 *.kdbx
 *.kdbx*
+*.swp
 __pycache__/
