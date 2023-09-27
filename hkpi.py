@@ -12,9 +12,20 @@ class cmds_desc:
   def __init__(self):
     self.cmds={
       "cd": {
-        "opts": "",
-        "match_types": ["d"],
+        "sopts": [],
+        "lopts": []
+        "complete_type": "group",
         "aliase": []
+      },
+      "ls": {
+        "sopts": ["-l", "-t", "-r"],
+        "lopts": ["--list", "--time", "--reverse"],
+        "complete_type": "group_entry"
+      },
+      "ec": {
+        "sopts": ["-a", "-b", "-c"],
+        "lopts": ["--pizdez", "--suka", "--bljadj"],
+        "complete_type": "entry"
       }
     }
 
@@ -27,8 +38,11 @@ class hkpi_general(cmds_desc):
   def __init__(self):
     super().__init__()
     self.kpdb=None
-    self.pwd="/a/b/c/d/e/f/g"
-    self.poss_match=["tut", "i" , "ne", "daleko", "kak" , "wesna"]
+    self.pwd="/"
+    self.poss_match_def=list(self.cmds.keys())
+    self.poss_match=[]
+    self.complete_type_def="cmd"
+    self.complete_type=self.complete_type_def
     readline.parse_and_bind("tab: complete")
     readline.set_completer_delims(" \n\t=")
     readline.set_completer(self.completer)
@@ -72,6 +86,18 @@ class hkpi_general(cmds_desc):
 
   def list_dir(self, path):
     pass
+
+  def set_poss_match(self):
+    m=[]
+    if self.complete_type=="group":
+      m=["group"]
+    elif self.complete_type=="group_entry" or self.complete_type=="entry_group":
+      m=["group", "entry"]
+    elif self.complete_type=="entry":
+      m=["entry"]:
+    elif self.complete_type=="cmd":
+      m=list(self.cmds.keys())
+    self.poss_math=m
     
   def get_cur_before(self):
     idx = readline.get_begidx()
@@ -82,6 +108,14 @@ class hkpi_general(cmds_desc):
   def completer(self, text, state):
     pref = self.get_cur_before()
     n = pref.split()
+    cmd=None
+    if len(n)==0:
+      self.complete_type=self.complete_type_def
+    else:
+      for cnt, arg in n:
+        if cnt!=0:
+          if 
+          
     #cmd = n[0] if len(n) > 0 else ""
     if text == "":
       matches = self.poss_match
