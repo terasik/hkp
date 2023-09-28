@@ -13,7 +13,7 @@ class cmds_desc:
     self.cmds={
       "cd": {
         "sopts": [],
-        "lopts": []
+        "lopts": [],
         "complete_type": "group",
         "aliase": []
       },
@@ -87,23 +87,46 @@ class hkpi_general(cmds_desc):
   def list_dir(self, path):
     pass
 
-  def set_poss_match(self):
+  def set_poss_match(self, arg, cmd):
     m=[]
+    #print (f"cmd={cmd}, arg={arg}") 
+    if cmd and  re.match("^-[a-zA-Z]?", arg): self.complete_type="sopt"
+    if cmd and  re.match("^--([a-zA-Z]\w)?", arg): self.complete_type="lopt"
     if self.complete_type=="group":
       m=["group"]
     elif self.complete_type=="group_entry" or self.complete_type=="entry_group":
       m=["group", "entry"]
     elif self.complete_type=="entry":
-      m=["entry"]:
+      m=["entry"]
     elif self.complete_type=="cmd":
       m=list(self.cmds.keys())
-    self.poss_math=m
+    elif self.complete_type=="sopt":
+      try:
+        m=self.cmds[cmd]['sopts']
+      except:
+        pass
+    elif self.complete_type=="lopt":
+      try:
+        m=self.cmds[cmd]['lopts']
+      except:
+        pass
+    #print(m)
+    self.poss_match=m
     
   def get_cur_before(self):
     idx = readline.get_begidx()
     full = readline.get_line_buffer()
     r=full[:idx]
+    #print (r)
     return r
+
+  def get_cur_arg(self):
+    idx = readline.get_begidx()
+    full = readline.get_line_buffer()
+    r=full[idx:]
+    #print (r)
+    return r
+
 
   def completer(self, text, state):
     pref = self.get_cur_before()
@@ -112,10 +135,18 @@ class hkpi_general(cmds_desc):
     if len(n)==0:
       self.complete_type=self.complete_type_def
     else:
-      for cnt, arg in n:
-        if cnt!=0:
-          if 
-          
+      for cnt, arg in enumerate(n):
+        #print(f"cmd: {cmd}, cnt: {cnt}, arg: {arg}")
+        if cnt==0:
+          cmd=arg
+          self.complete_type=self.cmds[cmd]['complete_type']
+        else:
+          #if re.match("^-\w?", arg): self.complete_type="sopt"
+          #elif re.match("^--\w?", arg): self.complete_type="lopt"
+          pass
+
+            
+    self.set_poss_match(self.get_cur_arg(), cmd)          
     #cmd = n[0] if len(n) > 0 else ""
     if text == "":
       matches = self.poss_match
@@ -139,8 +170,8 @@ class hkpi(hkpi_general):
       i=input(prompt).strip()
       #i=self.input_with_prefill(prompt, self._gen_str())
       if re.match("^(exit|break|quit)$", i): sys.exit(0)
-      else:
-        print(self.resolve_path(i))
+      #else:
+      ##  print(self.resolve_path(i))
 
 a=hkpi()
 a.run() 
