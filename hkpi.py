@@ -87,6 +87,9 @@ class hkpi_general(cmds_desc):
   def list_dir(self, path):
     pass
 
+  def get_eg_list(self, path):
+    
+
   def set_poss_match(self, arg, cmd):
     m=[]
     #print (f"cmd={cmd}, arg={arg}") 
