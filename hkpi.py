@@ -7,6 +7,27 @@ import ctypes
 import re
 import jmespath
 
+
+"""
+path=[] name=Database
+path=['gr1'] name=gr1
+path=['gr1', 'gr2'] name=gr2
+path=['gr1', 'gr34'] name=gr34
+path=['rg1'] name=rg1
+path=['rg1', 'gr with space'] name=gr with space
+path=['gr 45'] name=gr 45
+path=['rg2'] name=rg2
+
+
+path=['gr1', 'en1'] name=en1
+path=['gr1', 'gr2', 'some entry'] name=some entry
+path=['gr1', 'gr2', 'some new .'] name=some new .
+path=['rg1', 'in_root'] name=in_root
+path=['rg1', 'ohhh tre'] name=ohhh tre
+path=['rg1', 'gr with space', 'en_87'] name=en_87
+"""
+
+
 class cmds_desc:
   
   def __init__(self):
@@ -88,6 +109,8 @@ class hkpi_general(cmds_desc):
     pass
 
   def get_eg_list(self, path):
+    path=[re.sub("[^\*+" for p in re.split("/+", path) if p
+    g=self.kpdb.find_groups
     
 
   def set_poss_match(self, arg, cmd):
