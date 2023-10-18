@@ -60,6 +60,7 @@ class hkpi_general(cmds_desc):
     super().__init__()
     self.kpdb=None
     self.pwd="/"
+    self.pwd_for_compl=self.pwd
     self.poss_match_def=list(self.cmds.keys())
     self.poss_match=[]
     self.complete_type_def="cmd"
@@ -108,10 +109,42 @@ class hkpi_general(cmds_desc):
   def list_dir(self, path):
     pass
 
-  def get_eg_list(self, path):
-    path=[re.sub("[^\*+" for p in re.split("/+", path) if p
-    g=self.kpdb.find_groups
-    
+  def find_group_by_path(self, path=""):
+    if not path: path=self.pwd
+    path=[x for x in path.split("/") if x]
+    return self.kpdb.find_groups_by_path(path)
+
+  def subdir_names(self, group, end_slash=True):
+    e_s=""
+    if end_slash: e_s="/"
+    return [g.name+e_s for g in group.subgroups]
+
+
+  def get_group_list(self, arg):
+    arg_full=self.resolve_path(arg)
+    arg_part=arg_full[len(self.pwd_for_compl):]
+    old_group=self.find_group_by_path(self.pwd_for_compl)
+    next_gr=self.find_group_by_path(arg_full)
+    #print(f"raw path: {path}")
+    path=self.resolve_path(path)
+    #print(f"res path: {path}")
+    path=[p for p in re.split("/+", path) if p]
+    #print(f"spl path: {path}")
+    path=path[:-1]
+    if not path:
+      mg=self.kpdb.root_group
+    else:
+      mg=self.kpdb.find_groups_by_path(path)
+    #print(f"main grp: {mg}")
+    grs=[]
+    if mg:
+      for g in mg.subgroups:
+        if mg==self.kpdb.root_group:
+          grs.append("/"+g.name+"/")
+        else:
+          grs.append(g.name+"/")
+    #print(f"grps: {grs}")
+    return grs 
 
   def set_poss_match(self, arg, cmd):
     m=[]
@@ -119,7 +152,7 @@ class hkpi_general(cmds_desc):
     if cmd and  re.match("^-[a-zA-Z]?", arg): self.complete_type="sopt"
     if cmd and  re.match("^--([a-zA-Z]\w)?", arg): self.complete_type="lopt"
     if self.complete_type=="group":
-      m=["group"]
+      m=self.get_group_list(arg)
     elif self.complete_type=="group_entry" or self.complete_type=="entry_group":
       m=["group", "entry"]
     elif self.complete_type=="entry":
